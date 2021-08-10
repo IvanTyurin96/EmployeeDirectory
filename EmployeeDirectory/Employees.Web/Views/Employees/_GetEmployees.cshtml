@@ -1,0 +1,46 @@
+﻿@using Employees.Web.Common;
+@model Employees.Application.Employees.Queries.GetEmployeesList.EmployeesListVm
+
+<table class="table">
+	<tr>
+		<td><b>ФИО</b></td>
+		<td><b>Отдел</b></td>
+		<td><b>Номер телефона</b></td>
+		<td><b>Фотография</b></td>
+	</tr>
+	@if (Model != null)
+	{
+		@foreach (var item in Model.Employees)
+		{
+			<tr>
+				<td>@item.Name</td>
+				<td>@item.Department</td>
+				<td>@PhoneViewer.ViewPhone(item.PhoneNumber)</td>
+				<td><img src="~/@item.Photo" alt="" height="100" /></td>
+				<td>
+					<a asp-controller="employees" asp-action="update" asp-route-id="@item.Id" method="get" class="btn btn-primary">Изменить</a>
+				</td>
+				<td>
+					<form asp-controller="employees" asp-action="delete" asp-route-id="@item.Id" method="post">
+						<div class="form-group">
+							<input type="submit" class="btn btn-danger" onclick="return confirm('Вы действительно хотите удалить сотрудника: @item.Name ?')" value="Удалить" />
+						</div>
+					</form>
+				</td>
+			</tr>
+		}
+	}
+</table>
+@if (Model != null)
+{
+	@if (Model.PageViewModel.HasPreviousPage)
+	{
+		<a class="btn btn-outline-dark" onclick="prevPage()"> Назад </a>
+	}
+
+
+	@if (Model.PageViewModel.HasNextPage)
+	{
+		<a class="btn btn-outline-dark" onclick="nextPage()"> Вперед </a>
+	}
+}

@@ -1,0 +1,69 @@
+﻿@using Employees.Web.Models;
+@{
+	ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+	<h1 class="display-4">Справочник сотрудников</h1>
+</div>
+<div>
+	<a asp-controller="employees" asp-action="create" method="get" class="btn btn-primary">Добавить сотрудника</a>
+	<p></p>
+</div>
+
+<div>
+	<input id="search-input" type="text" class="custom-control" placeholder="Поиск..." />
+</div>
+
+<div id="result-employees">
+</div>
+
+@section Scripts
+{
+	<script>
+		var currentPage = 1
+
+		Rx.Observable
+			.fromEvent($("#search-input"), "input")
+			.debounceTime(500)
+			.subscribe(event => findEmployees(1, event.target.value));
+
+		function findEmployees(pageNumber, searchString)
+		{
+			$.ajax
+				({
+					type: "GET",
+					data:
+					{
+						PageNumber: pageNumber, SearchString: searchString
+					},
+					dataType: "text",
+					url: "@Url.Action("GetEmployees")",
+					success: function (result)
+					{
+						$("#result-employees").html(result);
+					},
+					error: function (req, status, error)
+					{
+						alert(error);
+					}
+				})
+
+			currentPage = pageNumber;
+		}
+
+		function prevPage()
+		{
+			findEmployees(currentPage -1, $("#search-input").val());
+		}
+
+		function nextPage()
+		{
+			findEmployees(currentPage + 1, $("#search-input").val());
+		}
+
+		findEmployees(currentPage, "");
+	</script>
+}
+
+

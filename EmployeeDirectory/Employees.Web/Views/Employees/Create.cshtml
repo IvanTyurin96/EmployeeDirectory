@@ -1,0 +1,53 @@
+﻿@model Employees.Web.Models.CreateEmployeeDto
+@inject Employees.Application.Interfaces.IEmployeesDbContext EmployeesDbContext
+@{
+	ViewData["Title"] = "Add employee";
+}
+<form asp-action="create" asp-controller="employees" method="post" enctype="multipart/form-data">
+	<div class="form-group">
+		<label><b>Имя</b></label>
+		<input type="text" asp-for="Name" class="form-control" placeholder="Иванов Иван Иванович"/>
+		<span asp-validation-for="Name"></span>
+		<p></p>
+	</div>
+	<div class="form-group">
+		<label><b>Отдел</b></label>
+		@{
+			var listItems = new List<SelectListItem>();
+			foreach (var department in EmployeesDbContext.Departments)
+			{
+				listItems.Add(new SelectListItem() 
+				{ 
+					Text = department.Name, Value = department.Id.ToString() 
+				});
+			}
+
+			@Html.DropDownListFor(i => i.DepartmentId, new SelectList(listItems, "Value", "Text"), new { @class = "form-control" })
+		}
+		<p></p>
+	</div>
+	<div class="form-group">
+		<label><b>Телефон</b></label>
+		<input type="text" asp-for="PhoneNumber" class="form-control phone" placeholder="+7 (999) 999-99-99"/>
+		<span asp-validation-for="PhoneNumber"></span>
+		<p></p>
+	</div>
+	<div class="form-group">
+		<label><b>Фотография</b></label>
+		<input type="file" asp-for="Photo" onchange="fileCheck(this)" />
+		<p></p>
+		<span asp-validation-for="Photo"></span>
+		<p></p>
+	</div>
+	<div class="form-group">
+		<input type="submit" value="Создать" class="btn btn-primary" />
+		<a asp-action="list" asp-controller="employees" method="get" class="btn btn-danger" >Отмена</a>
+	</div>
+</form>
+@section Scripts
+{
+	<script>
+		$(".phone").mask("+7 (999) 999-99-99");
+	</script>
+	@{await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
